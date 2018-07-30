@@ -1,0 +1,89 @@
+
+<!DOCTYPE html>
+<html>
+
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Latest compiled and minified CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+  <!-- jQuery library -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+  <!-- Latest compiled JavaScript -->
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+</head>
+
+<body>
+
+<div class="container-fluid">
+
+      <div id="table"></div>
+
+      <div class="row">
+        <div class="col-xs-2">
+          <div class="form-group">
+            <label for="cnum">Utmanings ID</label>
+            <input type="number" class="form-control" id="cnum">
+          </div>
+        </div>
+        <div class="col-sm-2">
+          <div class="form-group">
+            <label for="nolla">Nolla</label>
+            <input type="text" class="form-control" id="nolla">
+          </div>
+        </div>
+        <div class="col-sm-2">
+          <div class="form-group">
+            <label for="pwd">PhadderPass</label>
+            <input type="password" class="form-control" id="pwd">
+          </div>
+        </div>
+        <div class="col-sm-1">
+          <div class="form-group">
+            <label for="add">Anmäl</label>
+            <button type="button" class="btn btn-default form-control" onclick="sendWinnerRequest()">Skicka</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+</body>
+
+<footer>
+
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.0/socket.io.js"></script>
+  <script>
+    var socket = io.connect('http://192.168.1.238:3000');
+
+    socket.emit('table-req', 10);
+
+    function sendWinnerRequest(){
+      var c_id = parseInt(document.getElementById('cnum').value);
+      var nla = document.getElementById('nolla').value;
+      var pwd = document.getElementById('pwd').value;
+
+      var data = {
+        challenge_id: c_id,
+        nolla: nla,
+        password: pwd
+      }
+      
+      socket.emit('add-winner', data);
+    }
+
+    socket.on('table-response', function(data){
+      console.log(data);
+      document.getElementById('table').innerHTML = data.html;
+    });
+  </script>
+
+</footer>
+
+</html>
