@@ -28,7 +28,7 @@ func getChallenge(challengeID int) string {
 }
 
 func getNolla(challengeID int) string {
-	return xlChallenges.GetCellValue(challengeSheetm "")
+	return xlChallenges.GetCellValue(challengeSheet, "E"+strconv.Itoa(challengeID+1))
 }
 
 func main() {
