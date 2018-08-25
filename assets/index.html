@@ -67,7 +67,8 @@
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.0/socket.io.js"></script>
   <script>
-    var socket = io.connect('http://192.168.1.238:3000');
+    /*
+    var socket = io.connect('http://localhost:5000');
 
     socket.emit('table-req', 10);
 
@@ -93,6 +94,28 @@
     socket.on('invalid-table-req', function(data){
       console.log(data);
     });
+    */
+
+    var socket = io('ws://localhost:5000', {transports: ['websocket']});
+
+// listen for messages
+socket.on('message', function(message) {
+
+    console.log('new message');
+    console.log(message);
+});
+
+socket.on('connect', function () {
+
+    console.log('socket connected');
+
+    //send something
+    socket.emit('send', {name: "my name", message: "hello"}, function(result) {
+
+        console.log('sended successfully');
+        console.log(result);
+    });
+});
 
   </script>
 

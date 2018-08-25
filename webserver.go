@@ -1,80 +1,108 @@
 package main
 
 import (
-	"database/sql"
+	"fmt"
 	"log"
 	"net/http"
-	"flag"
+	"strconv"
 
-	"github.com/googollee/go-socket.io"
+	"github.com/360EntSecGroup-Skylar/excelize"
 
-	_ "github.com/go-sql-driver/mysql"
-
-	"encoding/json"
+	"github.com/graarh/golang-socketio"
+	"github.com/graarh/golang-socketio/transport"
 )
 
-
-
+/*
 type AddWinnerRequest struct {
 	ChallengeID string 'json:"challenge_id"'
 	NollaName string 'json:"nolla"'
-	Password string 'json:password'
+	Password string 'json:"password"'
+}
+*/
+
+var xlChallenges *excelize.File
+var challengeSheet string
+
+func getChallenge(challengeID int) string {
+	return xlChallenges.GetCellValue(challengeSheet, "A"+strconv.Itoa(challengeID+1))
 }
 
 func main() {
 
-	var ip = flag.String("database_ip", "127.0.0.1", "the ip to the database")
-	var port = flag.String("database_port", "5555", "the port to the database")
-	var user = flag.String("database_username", "turbotage", "the username to the database")
-	var password = flag.String("database_password", "klassuger", "the password to the database")
-	var dbname = flag.String("database_name", "tfnolla", "the database name")
+	challengeSheet = "Blad1"
+	//var ip = flag.String("database_ip", "127.0.0.1", "the ip to the database")
+	//var port = flag.String("database_port", "5555", "the port to the database")
+	//var user = flag.String("database_username", "turbotage", "the username to the database")
+	//var password = flag.String("database_password", "klassuger", "the password to the database")
+	//var dbname = flag.String("database_name", "tfnolla", "the database name")
 
-	db, err := sql.Open("mysql", *user + ":" + *password + "@tcp(" + *ip + ":" + *port + ")/" + *dbname)
+	//db, err := sql.Open("mysql", *user + ":" + *password + "@tcp(" + *ip + ":" + *port + ")/" + *dbname)
 
-	server, err := socketio.NewServer(nil)
+	var err error
+
+	xlChallenges, err = excelize.OpenFile("./Utmaningar.xlsx")
+
 	if err != nil {
-		log.Fatal(err)
+		fmt.Println(err)
+		return
 	}
 
-	server.On("connection", func(so socketio.Socket) {
-		log.Println("on connection")
-		so.Join("chat")
+	log.Println(getChallenge(1))
+	/*
+		//create
+		server := gosocketio.NewServer(transport.GetDefaultWebsocketTransport())
 
-		so.On("query:challenges", func(msg string) {
-			log.Println(msg)
+		//handle connected
+		server.On(gosocketio.OnConnection, func(c *gosocketio.Channel) {
+			log.Println("New client connected")
+			//join them to room
+			c.Join("chat")
 		})
 
-		so.On("request:add-winner", func(msg string) {
-			var winRequest AddWinnerRequest
-			err := json.Unmarshal([]byte(msg), winRequest)
-			if len(winRequest.ChallengeID) > 20 {
+		type Message struct {
+			Name string 'json:"name"'
+			Message string 'json:"message"'
+		}
 
-			}
-			if len(winRequest.NollaName) > 20 {
-
-			}
-			if len(winRequest.Password) > 20 {
-
-			}
-			rows, err := db.Query("SELECT name FROM users WHERE ChallengeID=?", winRequest.ChallengeID);
-			log.Println(rows)
-
-			db.Query("INSERT INTO Challenges () VALUES(")
-
+		//handle custom event
+		server.On("send", func(c *gosocketio.Channel, msg Message) string {
+			//send event to all in room
+			log.Println(msg.Message);
 		})
 
-		so.On("disconnection", func() {
-			log.Println("client disconnect")
-		})
+		http.Handle("/socket.io/", server)
+		http.Handle("/", http.FileServer(http.Dir("./asset")))
+		log.Println("Serving at localhost:5000...")
+		log.Fatal(http.ListenAndServe(":5000", nil))
+	*/
+
+	//create
+	server := gosocketio.NewServer(transport.GetDefaultWebsocketTransport())
+
+	//handle connected
+	server.On(gosocketio.OnConnection, func(c *gosocketio.Channel) {
+		log.Println("New client connected")
+		//join them to room
+		c.Join("chat")
 	})
 
-	server.On("error", func(so socketio.Socket, err error) {
-		log.Println("error:", err)
+	type Message struct {
+		Name    string `json:"name"`
+		Message string `json:"message"`
+	}
+
+	//handle custom event
+	server.On("send", func(c *gosocketio.Channel, msg Message) string {
+		//send event to all in room
+		c.BroadcastTo("chat", "message", msg)
+		log.Println(msg.Message)
+		return "OK"
 	})
 
-	http.Handle("/socket.io/", server)
-	http.Handle("/", http.FileServer(http.Dir("./asset")))
-	log.Println("Serving at localhost:5000...")
-	log.Fatal(http.ListenAndServe(":5000", nil))
+	//setup http server
+	serveMux := http.NewServeMux()
+	serveMux.Handle("/socket.io/", server)
+	serveMux.Handle("/", http.FileServer(http.Dir("./asset")))
+	log.Panic(http.ListenAndServe(":5000", serveMux))
 
 }
