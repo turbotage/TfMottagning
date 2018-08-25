@@ -55,6 +55,13 @@
 
 </body>
 
+<div class="container-fluid">
+
+  <div id="table"></div>
+  
+
+</div>
+
 <footer>
 
 
@@ -75,13 +82,18 @@
         password: pwd
       }
       
-      socket.emit('add-winner', data);
+      socket.emit('request:add-winner', data);
     }
 
     socket.on('table-response', function(data){
       console.log(data);
       document.getElementById('table').innerHTML = data.html;
     });
+
+    socket.on('invalid-table-req', function(data){
+      console.log(data);
+    });
+
   </script>
 
 </footer>
