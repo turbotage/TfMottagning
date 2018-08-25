@@ -59,16 +59,17 @@ func main() {
 		c.Join("chat")
 	})
 
-	type Message struct {
-		Name    string `json:"name"`
-		Message string `json:"message"`
+	type AddWinnerRequest struct {
+		ChallengeID int    `json:"challenge_id"`
+		NollaName   string `json:"nolla"`
+		Password    string `json:"password"`
 	}
 
 	//handle custom event
-	server.On("send", func(c *gosocketio.Channel, msg Message) string {
+	server.On("add-winner", func(c *gosocketio.Channel, winReq AddWinnerRequest) string {
 		//send event to all in room
-		c.BroadcastTo("chat", "message", msg)
-		log.Println(msg.Message)
+
+		log.Println(winReq)
 		return "OK"
 	})
 
