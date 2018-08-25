@@ -27,6 +27,10 @@ func getChallenge(challengeID int) string {
 	return xlChallenges.GetCellValue(challengeSheet, "A"+strconv.Itoa(challengeID+1))
 }
 
+func getNolla(challengeID int) string {
+	return xlChallenges.GetCellValue(challengeSheetm "")
+}
+
 func main() {
 
 	challengeSheet = "Blad1"
@@ -70,7 +74,8 @@ func main() {
 		//send event to all in room
 
 		log.Println(winReq.ChallengeID)
-		log.Println(win)
+		log.Println(winReq.NollaName)
+		log.Println(winReq.Password)
 		return "OK"
 	})
 

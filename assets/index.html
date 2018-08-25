@@ -72,7 +72,7 @@
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.0/socket.io.js"></script>
   <script>
-    var socket = io('ws://yourdomain.com', {transports: ['websocket']});
+    var socket = io('ws://localhost:5000', {transports: ['websocket']});
 
     // listen for messages
     socket.on('message', function(message) {
