@@ -48,33 +48,6 @@ func main() {
 	}
 
 	log.Println(getChallenge(1))
-	/*
-		//create
-		server := gosocketio.NewServer(transport.GetDefaultWebsocketTransport())
-
-		//handle connected
-		server.On(gosocketio.OnConnection, func(c *gosocketio.Channel) {
-			log.Println("New client connected")
-			//join them to room
-			c.Join("chat")
-		})
-
-		type Message struct {
-			Name string 'json:"name"'
-			Message string 'json:"message"'
-		}
-
-		//handle custom event
-		server.On("send", func(c *gosocketio.Channel, msg Message) string {
-			//send event to all in room
-			log.Println(msg.Message);
-		})
-
-		http.Handle("/socket.io/", server)
-		http.Handle("/", http.FileServer(http.Dir("./asset")))
-		log.Println("Serving at localhost:5000...")
-		log.Fatal(http.ListenAndServe(":5000", nil))
-	*/
 
 	//create
 	server := gosocketio.NewServer(transport.GetDefaultWebsocketTransport())
@@ -102,7 +75,7 @@ func main() {
 	//setup http server
 	serveMux := http.NewServeMux()
 	serveMux.Handle("/socket.io/", server)
-	serveMux.Handle("/", http.FileServer(http.Dir("./asset")))
+	serveMux.Handle("/", http.FileServer(http.Dir("assets")))
 	log.Panic(http.ListenAndServe(":5000", serveMux))
 
 }
