@@ -72,7 +72,14 @@
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.0/socket.io.js"></script>
   <script>
-    var socket = io.connect('http://127.0.0.1:5000', {transport : ['websocket']});
+    var socket = io('ws://yourdomain.com', {transports: ['websocket']});
+
+    // listen for messages
+    socket.on('message', function(message) {
+
+        console.log('new message');
+        console.log(message);
+    });
 
     //socket.emit('table-req', 10);
 
@@ -87,7 +94,7 @@
         password: pwd
       }
       
-      socket.emit('add-winner', JSON.stringify(data));
+      socket.emit('add-winner', data);
       console.log(data)
     }
 

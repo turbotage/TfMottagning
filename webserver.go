@@ -69,7 +69,8 @@ func main() {
 	server.On("add-winner", func(c *gosocketio.Channel, winReq AddWinnerRequest) string {
 		//send event to all in room
 
-		log.Println(winReq)
+		log.Println(winReq.ChallengeID)
+		log.Println(win)
 		return "OK"
 	})
 
