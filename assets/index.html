@@ -21,45 +21,40 @@
 
 <div class="container-fluid">
 
-      <div class="row">
-        <div class="col-xs-2">
-          <div class="form-group">
-            <label for="cnum">Utmanings ID</label>
-            <input type="number" class="form-control" id="cnum">
-          </div>
+      <div class="col-sm-2">
+        <div class="form-group">
+          <label for="cnum">Utmanings ID</label>
+          <input type="number" class="form-control" id="cnum">
         </div>
-        <div class="col-sm-2">
-          <div class="form-group">
-            <label for="nolla">Nolla</label>
-            <input type="text" class="form-control" id="nolla">
-          </div>
+      </div>
+      <div class="col-sm-2">
+        <div class="form-group">
+          <label for="nolla">Nolla</label>
+          <input type="text" class="form-control" id="nolla">
         </div>
-        <div class="col-sm-2">
-          <div class="form-group">
-            <label for="pwd">PhadderPass</label>
-            <input type="password" class="form-control" id="pwd">
-          </div>
-        </div>
-        <div class="col-sm-1">
-          <div class="form-group">
-            <label for="add">Anmäl</label>
-            <button type="button" class="btn btn-default form-control" onclick="sendWinnerRequest()">Skicka</button>
-          </div>
+      </div>
+      <div class="col-sm-2">
+        <div class="form-group">
+          <label for="pwd">PhadderPass</label>
+          <input type="password" class="form-control" id="pwd">
+         </div>
+      </div>
+      <div class="col-sm-2">
+        <div class="form-group">
+          <label for="add">Anmäl</label>
+          <button type="button" class="btn btn-default form-control" onclick="sendWinnerRequest()">Skicka</button>
         </div>
       </div>
 
-      <div id="table">
-        <table style="width:50%">
-
-        <tr>
-          <th>Utmanings ID</th>
-          <th>Poäng</th>
-          <th>Nolla</th>
-          <th>Phadder</th>
-        </tr>
-
-        
-
+      <div class="table-respnsive">
+        <table style="width:50%", class="table", id="table">
+          <tr>
+            <th>Utmanings ID</th>
+            <th>Challenge</th>
+            <th>Poäng</th>
+            <th>Nolla/Nollegrupp</th>
+            <th>Phadder</th>
+          </tr>
         </table>
       </div>
 
@@ -74,15 +69,8 @@
   <script>
     var socket = io('ws://localhost:5000', {transports: ['websocket']});
 
-    // listen for messages
-    socket.on('message', function(message) {
-
-        console.log('new message');
-        console.log(message);
-    });
-
     //socket.emit('table-req', 10);
-
+    
     function sendWinnerRequest(){
       var c_id = parseInt(document.getElementById('cnum').value);
       var nla = document.getElementById('nolla').value;
@@ -98,9 +86,45 @@
       console.log(data)
     }
 
+    socket.on('update', function(data){
+      console.log(data)
+      socket.emit('table-req', 10)
+    })
+
+    socket.on('alert', function(data){
+      alert(data)
+    })
+
     socket.on('table-response', function(data){
-      console.log(data);
-      document.getElementById('table').innerHTML = data.html;
+      var jsonData = JSON.parse(data);
+      var table = document.getElementById("table");
+      
+      console.log(jsonData)
+
+      var tableRows = table.getElementsByTagName('tr');
+      var rowCount = tableRows.length;
+
+      for (var x=rowCount-1; x>0; x--) {
+        table.deleteRow(i);
+      }
+
+      for(var i = 0, l = jsonData.length; i < l; i++)
+      {
+        var obj = jsonData[i];
+        
+        var row = table.insertRow(-1);
+        var cidCell = row.insertCell(0);
+        var cnameCell = row.insertCell(1);
+        var pointsCell = row.insertCell(2);
+        var nollaCell = row.insertCell(3);
+        var phadderCell = row.insertCell(4);
+
+        cidCell.innerHTML = obj.cid;
+        cnameCell.innerHTML = obj.cname;
+        pointsCell.innerHTML = obj.points;
+        nollaCell.innerHTML = obj.nolla;
+        phadderCell.innerHTML = obj.phadder;
+      }
     });
   </script>
 
