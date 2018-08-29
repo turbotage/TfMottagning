@@ -38,11 +38,12 @@ type AddWinnerRequest struct {
 }
 
 type TableRowResponseData struct {
-	CID     int    `json:"cid"`
-	CName   string `json:"cname"`
-	Points  int    `json:"points"`
-	Nolla   string `json:"nolla"`
-	Phadder string `json:"phadder"`
+	CID         int    `json:"cid"`
+	CName       string `json:"cname"`
+	Points      int    `json:"points"`
+	RespPhadder string `json:"respphadder"`
+	Nolla       string `json:"nolla"`
+	Phadder     string `json:"phadder"`
 }
 
 func getChallenge(challengeID int) string {
@@ -50,7 +51,7 @@ func getChallenge(challengeID int) string {
 }
 
 func getNolla(challengeID int) string {
-	return xlChallenges.GetCellValue(challengeSheet, "C"+strconv.Itoa(challengeID+1))
+	return xlChallenges.GetCellValue(challengeSheet, "D"+strconv.Itoa(challengeID+1))
 }
 
 func getTable() ([]TableRowResponseData, int) {
@@ -61,8 +62,9 @@ func getTable() ([]TableRowResponseData, int) {
 		tableRowResponse[i-1].CID = i
 		tableRowResponse[i-1].CName = rows[i][0]
 		tableRowResponse[i-1].Points, _ = strconv.Atoi(rows[i][1])
-		tableRowResponse[i-1].Nolla = rows[i][2]
-		tableRowResponse[i-1].Phadder = rows[i][3]
+		tableRowResponse[i-1].RespPhadder = rows[i][2]
+		tableRowResponse[i-1].Nolla = rows[i][3]
+		tableRowResponse[i-1].Phadder = rows[i][4]
 		length = i
 	}
 	return tableRowResponse, length
@@ -93,7 +95,7 @@ func main() {
 
 	challengeSheet = "Blad1"
 	nRowsC = 52
-	nColsC = 5
+	nColsC = 6
 
 	passwordSheet = "Blad1"
 	nRowsP = 25
@@ -187,5 +189,6 @@ func main() {
 	serveMux.Handle("/socket.io/", server)
 	serveMux.Handle("/", http.FileServer(http.Dir("assets")))
 	log.Panic(http.ListenAndServeTLS(":443", "server.crt", "server.key", serveMux))
+	//log.Panic(http.ListenAndServe(":3000", serveMux))
 
 }
