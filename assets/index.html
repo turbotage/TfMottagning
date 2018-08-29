@@ -46,7 +46,9 @@
         </div>
       </div>
 
-      <div class="table-respnsive">
+    </div>
+
+      <div class="table-responsive">
         <table style="width:50%", class="table", id="table">
           <tr>
             <th>Utmanings ID</th>
@@ -57,9 +59,7 @@
           </tr>
         </table>
       </div>
-
-    </div>
-
+      
 </body>
 
 <footer>
@@ -67,7 +67,7 @@
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.0/socket.io.js"></script>
   <script>
-    var socket = io('ws://localhost:5000', {transports: ['websocket']});
+    var socket = io('ws://213.113.170.233:3000', {transports: ['websocket']});
 
     //socket.emit('table-req', 10);
     
@@ -125,6 +125,8 @@
         nollaCell.innerHTML = obj.nolla;
         phadderCell.innerHTML = obj.phadder;
       }
+
+      socket.emit('message', "in table response")
     });
   </script>
 

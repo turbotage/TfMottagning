@@ -140,6 +140,11 @@ func main() {
 		return "OK"
 	})
 
+	server.On("message", func(c *gosocketio.Channel, msg string) string {
+		log.Println(msg)
+		return "OK"
+	})
+
 	//handle custom event
 	server.On("add-winner", func(c *gosocketio.Channel, winReq AddWinnerRequest) string {
 		//send event to all in room
@@ -181,6 +186,6 @@ func main() {
 	serveMux := http.NewServeMux()
 	serveMux.Handle("/socket.io/", server)
 	serveMux.Handle("/", http.FileServer(http.Dir("assets")))
-	log.Panic(http.ListenAndServe(":5000", serveMux))
+	log.Panic(http.ListenAndServeTLS(":443", "server.crt", "server.key", serveMux))
 
 }
